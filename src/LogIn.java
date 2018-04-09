@@ -6,6 +6,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.SpringLayout;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -41,6 +43,7 @@ public class LogIn extends JFrame {
 	public static String username;
 	private char defaultEchoChar;
 	private JLabel lbUserIcon;
+	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	// private Image backgroundImage;
 
 	/**
@@ -54,6 +57,8 @@ public class LogIn extends JFrame {
 					frame = new LogIn();
 					frame.setVisible(true);
 					frame.requestFocus();
+					
+				    
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -155,7 +160,7 @@ public class LogIn extends JFrame {
 
 		setBackground(Color.PINK);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1280, 847);
+		setBounds(100, 100, screenSize.width-640, screenSize.height-233);
 		getContentPane().setLayout(new BorderLayout());
 		JLabel background = new JLabel(new ImageIcon("Image\\background2.jpg"));
 		// add(background);
