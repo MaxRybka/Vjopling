@@ -28,12 +28,17 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.IOException;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class LogIn extends JFrame {
 
-	private JPanel background;
+	private JPanel contentPane;
 	private JLabel lbLogoVjopling;
 	static private JTextField tfEmail;
 	private static JPasswordField passwordField;
@@ -44,6 +49,10 @@ public class LogIn extends JFrame {
 	private char defaultEchoChar;
 	private JLabel lbUserIcon;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	private int xx;
+	private int xy;
+	private JLabel lblExitIcon;
+	private JLabel lblLineICONFIED;
 	// private Image backgroundImage;
 
 	/**
@@ -55,10 +64,11 @@ public class LogIn extends JFrame {
 			public void run() {
 				try {
 					frame = new LogIn();
+					frame.setUndecorated(true);
 					frame.setVisible(true);
 					frame.requestFocus();
+					frame.setResizable(false);
 					
-				    
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -95,6 +105,12 @@ public class LogIn extends JFrame {
 		Image img22 = img11.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
 		ImageIcon b = new ImageIcon(img22);
 		lbUserIcon.setIcon(b);
+		
+		ImageIcon exit = new ImageIcon(Toolkit.getDefaultToolkit().getImage("Image\\exit.png"));
+		Image img111 = exit.getImage();
+		Image img222 = img111.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+		ImageIcon c = new ImageIcon(img222);
+		lblExitIcon.setIcon(c);
 		
 		
 	}
@@ -163,10 +179,63 @@ public class LogIn extends JFrame {
 		setBounds(100, 100, screenSize.width-640, screenSize.height-233);
 		getContentPane().setLayout(new BorderLayout());
 		JLabel background = new JLabel(new ImageIcon("Image\\background2.jpg"));
+		background.addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				int x =e.getXOnScreen();
+				int y = e.getYOnScreen();
+				frame.setLocation(x-xx,y-xy);
+			}
+		});
+		background.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				setOpacity((float)1.0);
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				setOpacity((float)0.8);
+				xx = e.getX();
+				xy = e.getY();
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 		// add(background);
-		// background = new JPanel();
-		// background.setBackground(new Color(176, 224, 230));
-		// background.setForeground(Color.WHITE);
+		 //background = new JPanel();
+		 background.setBackground(new Color(176, 224, 230));
+		 background.setForeground(Color.WHITE);
+		//contentPane = new JPanel();
+		background.setBackground(new Color(176, 224, 230));
+		background.setForeground(Color.WHITE);
 		background.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(background);
@@ -175,7 +244,7 @@ public class LogIn extends JFrame {
 		background.setLayout(sl_background);
 
 		// try {
-		// frame.getbackground().add(new JPanelWithBackground("Image\\background.jpg"));
+		// frame.getbackground().add(new JPanelWithbackground("Image\\background.jpg"));
 		// } catch (IOException e1) {
 		// // TODO Auto-generated catch block
 		// e1.printStackTrace();
@@ -223,11 +292,11 @@ public class LogIn extends JFrame {
 		background.add(lblPassword);
 
 		btnEnter = new JButton("LOGIN");
+		sl_background.putConstraint(SpringLayout.WEST, btnEnter, 487, SpringLayout.WEST, background);
+		sl_background.putConstraint(SpringLayout.SOUTH, btnEnter, 117, SpringLayout.SOUTH, passwordField);
+		sl_background.putConstraint(SpringLayout.EAST, btnEnter, 742, SpringLayout.WEST, background);
 		btnEnter.setForeground(new Color(255, 255, 255));
 		sl_background.putConstraint(SpringLayout.NORTH, btnEnter, 70, SpringLayout.SOUTH, passwordField);
-		sl_background.putConstraint(SpringLayout.WEST, btnEnter, 487, SpringLayout.WEST, background);
-		sl_background.putConstraint(SpringLayout.SOUTH, btnEnter, -192, SpringLayout.SOUTH, background);
-		sl_background.putConstraint(SpringLayout.EAST, btnEnter, 742, SpringLayout.WEST, background);
 		btnEnter.setBackground(new Color(51, 102, 255));
 		btnEnter.setFont(new Font("Century Gothic", Font.PLAIN, 18));
 		background.add(btnEnter);
@@ -238,6 +307,21 @@ public class LogIn extends JFrame {
 		sl_background.putConstraint(SpringLayout.SOUTH, lbUserIcon, 0, SpringLayout.SOUTH, tfEmail);
 		sl_background.putConstraint(SpringLayout.EAST, lbUserIcon, -10, SpringLayout.WEST, tfEmail);
 		background.add(lbUserIcon);
+		
+		lblExitIcon = new JLabel("");
+		sl_background.putConstraint(SpringLayout.NORTH, lblExitIcon, 10, SpringLayout.NORTH, background);
+		sl_background.putConstraint(SpringLayout.WEST, lblExitIcon, -66, SpringLayout.EAST, background);
+		sl_background.putConstraint(SpringLayout.SOUTH, lblExitIcon, 52, SpringLayout.NORTH, background);
+		sl_background.putConstraint(SpringLayout.EAST, lblExitIcon, -10, SpringLayout.EAST, background);
+		background.add(lblExitIcon);
+		
+		lblLineICONFIED = new JLabel("______");
+		sl_background.putConstraint(SpringLayout.SOUTH, lblLineICONFIED, 46, SpringLayout.NORTH, background);
+		lblLineICONFIED.setFont(new Font("Century Gothic", Font.PLAIN, 18));
+		sl_background.putConstraint(SpringLayout.NORTH, lblLineICONFIED, 0, SpringLayout.NORTH, lblExitIcon);
+		sl_background.putConstraint(SpringLayout.WEST, lblLineICONFIED, -93, SpringLayout.WEST, lblExitIcon);
+		sl_background.putConstraint(SpringLayout.EAST, lblLineICONFIED, -37, SpringLayout.WEST, lblExitIcon);
+		background.add(lblLineICONFIED);
 
 	}
 
@@ -257,11 +341,29 @@ public class LogIn extends JFrame {
 				}
 			}
 		});
+		lblExitIcon.addMouseListener(new MouseAdapter() {
+			@Override
+			 public void mouseClicked(MouseEvent e) {
+	          System.exit(0);
+	         
+	        }
+		});
+		lblLineICONFIED.addMouseListener(new MouseAdapter() {
+			@Override
+			 public void mouseClicked(MouseEvent e) {
+				frame.setState(JFrame.ICONIFIED);
+	         
+	        }
+		});
+		
 
 	}
 
 	public static boolean authenticate(String username, String password) {
 		if (username.equals("David") && password.equals("admin228")) {
+			return true;
+		}
+		if (username.equals("login") && password.equals("letmein")) {
 			return true;
 		}
 		return false;
@@ -274,4 +376,21 @@ public class LogIn extends JFrame {
 	private static String getPassword() {
 		return new String(passwordField.getPassword());
 	}
+//	@SuppressWarnings("unchecked")
+//	int xy;
+//	int xx;
+//	private void sidebarMousePressed(java.awt.event.MouseEvent evt) {
+//		setOpacity((float)0.8);
+//		xx = evt.getX();
+//		xy = evt.getY();
+//		
+//	}
+//	private void sidebarMouseDragged(java.awt.event.MouseEvent evt) {
+//		int x =evt.getXOnScreen();
+//		int y = evt.getYOnScreen();
+//		this.setLocation(x-xx,y-xy);
+//	}
+//	private void slidebarMouseReleased(java.awt.event.MouseEvent evt) {
+//		setOpacity((float)1.0);
+//	}
 }
