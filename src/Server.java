@@ -1,21 +1,71 @@
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+
+import javax.swing.tree.RowMapper;
+
+import javafx.scene.chart.PieChart.Data;
 
 public class Server {
 	static Connection conn;
-
+	static int port = 8080;
+	static Socket localSocket;
+	
 	public static void main(String args[]) {
-		int port = 8080;
+		
+		Connection();
+		try {
+			ServerSocket servSocket = new ServerSocket(port);
+			System.out.println("Waiting for a connection on " + port);
+			
+			PrintWriter pw = null;
+			BufferedReader br = null;
+			while (true) {
+				try {
+					localSocket = servSocket.accept();
+					System.out.println("Accepted");
+					pw = new PrintWriter(localSocket.getOutputStream(), true);
+					br = new BufferedReader(new InputStreamReader(localSocket.getInputStream()));
+					String str = br.readLine();
+					switch (str) {
+					case "Create":
+						System.out.println(localSocket.toString());
+						createStuff();
+						break;
+					case "Save":
+						saveImage("4", "Wow", "Its working!", new File("Image\\exit.png"));
+						break;
+					}
+				} catch (IOException ex) {
+					//ex.printStackTrace(System.out);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
+	}
+
+	private static void showTable() {
 		try {
 			ServerSocket servSocket = new ServerSocket(port);
 			while (true) {
@@ -25,18 +75,18 @@ public class Server {
 						PrintWriter pw = new PrintWriter(localSocket.getOutputStream(), true);
 						BufferedReader br = new BufferedReader(new InputStreamReader(localSocket.getInputStream()))) {
 					String str;
-					while ((str = br.readLine()).equals("Start")) {
+					if ((str = br.readLine()).equals("Start")) {
 						try {
 							Connection();
 							try {
-								String query = "SELECT * FROM employeeinfo ;";
-								Statement stmnt =  conn.createStatement();
+								String query = "SELECT * FROM employeeinfo;";
+								Statement stmnt = conn.createStatement();
 
 								ResultSet rs = stmnt.executeQuery(query);
 
 								while (rs.next())
-									pw.println("Name : " + rs.getString("name") + " " + rs.getString("surname")
-											+ " Age : " + rs.getString("age"));
+									pw.println("Login : " + rs.getString("Login") + " " + rs.getString("Password")
+											+ " Info : " + rs.getString("Info"));
 
 							} finally {
 								conn.close();
@@ -54,7 +104,109 @@ public class Server {
 		}
 
 	}
+	
+	private static void createStuff() {
+		System.out.println(localSocket.toString());
+		try(PrintWriter pw = new PrintWriter(localSocket.getOutputStream(), true);
+				BufferedReader br = new BufferedReader(new InputStreamReader(localSocket.getInputStream()))) {
 
+				try {
+			        DataInputStream dis = new DataInputStream(new BufferedInputStream(localSocket.getInputStream()));
+			        DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(localSocket.getOutputStream()));;
+			       
+			        String name =dis.readUTF();
+					System.out.println(name);
+					String description = dis.readUTF();
+					System.out.println(description);
+					int quantity = dis.read();
+					System.out.println();
+					String category = dis.readUTF();
+					
+			        File file = new File(dis.readUTF());
+			        int n = 0;
+			        int len = dis.readInt();
+			        System.out.println(""+len);
+			        byte[]buf = new byte[len];
+
+			            System.out.println("Receiving file: " + file.getName());
+			            //create a new fileoutputstream for each new file
+			            FileOutputStream fos = new FileOutputStream(file);
+			            //read file
+			            while((n = dis.read(buf)) != -1){
+			                fos.write(buf,0,n);
+			                fos.flush();
+			            }
+			            fos.close();
+			            dis.close();
+			            dos.close();
+			            
+			        boolean isUserExists = false;
+			        try (PreparedStatement ps = conn.prepareStatement("select 1 from stuff where Name = ?")) {
+						ps.setString(1, name);
+						try (ResultSet rs = ps.executeQuery()) {
+							if (rs.next()) {
+								isUserExists = true;
+							}
+						}
+					}
+
+					if (isUserExists) {
+						System.out.println("User exists!");
+					}else {
+				         PreparedStatement ps = conn.prepareStatement("insert into stuff(Name,Description,Quantity,Category,Image) values(?,?,?,?,?)");
+				         InputStream is = new FileInputStream(file);
+				         ps.setString(1, name);
+				         ps.setString(2, description);
+				         ps.setInt(3, quantity);
+				         ps.setString(4,category);
+				         ps.setBlob(5, is);
+				         ps.executeUpdate();
+					}
+			            
+			    } catch (IOException e) {
+			        e.printStackTrace();
+
+			    } catch (SQLException e) {
+					e.printStackTrace();
+				}
+				pw.close();
+				br.close();
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void saveImage(String id, String name, String Info, File selectedFile) {
+
+		try {
+			Connection();
+			boolean isUserExists = false;
+			try (PreparedStatement ps = conn.prepareStatement("select 1 from image where ID = ?")) {
+				ps.setString(1, id);
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						isUserExists = true;
+					}
+				}
+			}
+
+			if (isUserExists) {
+				System.out.println("User exists!");
+			} else {
+				PreparedStatement ps = conn.prepareStatement("insert into image(ID,Name,Info,Img) values(?,?,?,?)");
+				InputStream is = new FileInputStream(selectedFile);
+				ps.setString(1, id);
+				ps.setString(2, name);
+				ps.setString(3, Info);
+				ps.setBlob(4, is);
+				ps.executeUpdate();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	static void Connection() {
 		String userName = "root";
 		String password = "postgres";
@@ -63,6 +215,7 @@ public class Server {
 			conn = DriverManager.getConnection(url, userName, password);
 			System.out.println("Connection Complete!\n");
 		} catch (Exception e) {
+			System.out.println("No connection to database!!!");
 		}
 	}
 }
