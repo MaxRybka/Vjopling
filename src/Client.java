@@ -21,6 +21,7 @@ public class Client {
 	static int port = 8080;
 	static Socket socket;
 	HashMap<String,Goods> goods;
+//	static boolean update = false;
 
 	public static void main(String args[]) throws Exception {
 //		createStuff("second", "Description", 1, "Category", new File("Image\\background.jpg"));
@@ -36,18 +37,16 @@ public class Client {
 	}
 
 	public static HashMap<String,Goods> getGoodsMassive() {
-		//System.out.println("Goods1");
-		ShowAll sa = new ShowAll();
+		UpdateAll sa = new UpdateAll();
 		Thread thread = new Thread(sa);
 		thread.start();
-		//System.out.println("Goods2");
 		return sa.getGoods();
 
 	}
 
 }
 
-class ShowAll implements Runnable {
+class UpdateAll implements Runnable {
 	HashMap<String, Goods> stuff = new HashMap<>();
 	String name,description,category;
 	Socket socket;
@@ -59,7 +58,7 @@ class ShowAll implements Runnable {
 	@Override
 	public void run() {
 		try {
-			socket = new Socket("192.168.31.21", 8080);
+			socket = new Socket("10.0.128.160", 8080);
 			PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			pw.println("All");	
@@ -119,7 +118,7 @@ class CreateStuffThread implements Runnable {
 	@Override
 	public void run() {
 		try {
-			Socket socket = new Socket("192.168.31.21", 8080);
+			Socket socket = new Socket("10.0.128.160", 8080);
 			PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
 			// BufferedReader br = new BufferedReader(new
 			// InputStreamReader(socket.getInputStream()));
@@ -168,3 +167,19 @@ class CreateStuffThread implements Runnable {
 	}
 
 }
+
+//class UpdateWait extends Thread{
+//
+//	@Override
+//	public void run() {
+//		while(true) {
+//			
+//			while(!Client.update) {//while there is no signal for update
+//				Thread.yield();
+//			}
+//			Client.getGoodsMassive();
+//			
+//		}
+//	}
+//	
+//}
