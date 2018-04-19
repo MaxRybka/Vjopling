@@ -24,7 +24,7 @@ public class Client {
 
 	public static void main(String args[]) throws Exception {
 //		createStuff("second", "Description", 1, "Category", new File("Image\\background.jpg"));
-		goodsMassive();
+		getGoodsMassive();
 
 	}
 
@@ -35,12 +35,12 @@ public class Client {
 		
 	}
 
-	public static HashMap<String,Goods> goodsMassive() {
-		System.out.println("Goods1");
+	public static HashMap<String,Goods> getGoodsMassive() {
+		//System.out.println("Goods1");
 		ShowAll sa = new ShowAll();
 		Thread thread = new Thread(sa);
 		thread.start();
-		System.out.println("Goods2");
+		//System.out.println("Goods2");
 		return sa.getGoods();
 
 	}
@@ -78,6 +78,7 @@ class ShowAll implements Runnable {
 			while(dis.readBoolean()) {
 				String name = dis.readUTF();
 				String description = dis.readUTF();
+				double price = dis.readDouble();
 				int quantity = dis.readInt();
 				String category = dis.readUTF();
 				int len = dis.readInt();
@@ -88,7 +89,8 @@ class ShowAll implements Runnable {
 				    dis.readFully(imageB, 0, imageB.length); // read the message
 				}
 				ImageIcon image = new ImageIcon(imageB);
-				//Goods stuff = new Goods();
+				Goods good = new Goods(name,category,description,quantity,image);
+				stuff.put(name, good);
 			}
 			
 			dis.close();
@@ -131,6 +133,7 @@ class CreateStuffThread implements Runnable {
 				dos.flush();
 				dos.writeUTF(description);
 				dos.flush();
+				//dos.writeInt(price);
 				dos.write(quantity);
 				dos.flush();
 				dos.writeUTF(category);

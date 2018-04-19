@@ -126,6 +126,8 @@ public class Server {
 					dos.flush();
 					dos.writeUTF(rs.getString("Description"));
 					dos.flush();
+					dos.writeDouble(rs.getDouble("Price"));
+					dos.flush();
 					dos.writeInt(rs.getInt("Quantity"));
 					dos.flush();
 					dos.writeUTF(rs.getString("Category"));

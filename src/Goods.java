@@ -6,17 +6,17 @@ public class Goods {
 	final static public String all = "All";
 	
 	private String name;
-	private int price;
+	private String description;
 	private int ammount;
 	private ImageIcon image;
 	private ImageIcon defaultImage;
 	private String category;
 	
 	
-	public Goods(String name, String category, int price, int ammount, ImageIcon image) {
+	public Goods(String name, String category,String description, int ammount, ImageIcon image) {
 		this.name = name;
 		this.setCategory((category == null ? all : category));
-		this.price = (price == 0 ? 0 : price);
+		this.description = description;
 		this.ammount = (ammount == 0 ? 0 : ammount);
 		this.image = (image == null ? defaultImage : image);
 	}
@@ -61,13 +61,13 @@ public class Goods {
 	}
 
 
-	public int getPrice() {
-		return price;
+	public String getDescription() {
+		return description;
 	}
 
 
-	public void setPrice(int price) {
-		this.price = price;
+	public void setPrice(String description) {
+		this.description = description;
 	}
 
 
