@@ -114,7 +114,6 @@ class CreateStuffThread implements Runnable {
 		this.image = image1;
 	}
 
-<<<<<<< Updated upstream
 	@Override
 	public void run() {
 		try {
@@ -157,19 +156,6 @@ class CreateStuffThread implements Runnable {
 				dos.close();
 			} catch (IOException e) {
 				e.printStackTrace();
-=======
-		int portNumber = 8080;
-		String str = DataInput.getString();
-		System.out.println("Client is started");
-		Socket socket = new Socket("192.168.137.66", portNumber);
-		BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
-		pw.println(str);
-
-		while ((str = br.readLine()) != null) {
-			if (str.equals("bye")) {
-				break;
->>>>>>> Stashed changes
 			}
 
 			socket.close();

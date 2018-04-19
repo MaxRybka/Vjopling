@@ -1,4 +1,14 @@
+<<<<<<< HEAD
 /Client.class
+=======
+<<<<<<< Updated upstream
+/saveImage.class
+/checkPassword.class
+/n.class
+/Program.class
+/SomeThing.class
+/CheckPassword.class
+>>>>>>> 4ba951364e145fba1758e8c8eb9bbeaf2ea99b6c
 /CreateStuffThread.class
 /DataInput.class
 /Goods.class
@@ -19,4 +29,18 @@
 /Server.class
 /ShowAll.class
 /Storage.class
+<<<<<<< HEAD
 /Tester.class
+=======
+=======
+/LogIn$10.class
+/LogIn$9.class
+>>>>>>> Stashed changes
+>>>>>>> 4ba951364e145fba1758e8c8eb9bbeaf2ea99b6c
+/DecriptionStuff$1.class
+/DecriptionStuff$2.class
+/DecriptionStuff$3.class
+/DecriptionStuff$4.class
+/DecriptionStuff$5.class
+/DecriptionStuff.class
+/PanelWithStuff.class
