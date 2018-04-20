@@ -1,26 +1,9 @@
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.JTextComponent;
 import java.awt.Color;
 import java.awt.Dimension;
-
-import javax.swing.SpringLayout;
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Image;
-import javax.swing.JPasswordField;
-import javax.swing.JButton;
-import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,12 +12,23 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
-import java.io.File;
-import java.io.IOException;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.JTextComponent;
 
 public class LogIn extends JFrame {
 
@@ -120,14 +114,17 @@ public class LogIn extends JFrame {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				if (tfEmail.getText().equals(""))
+				if (tfEmail.getText().equals("")) {
 					tfEmail.setText("Username");
+					tfEmail.setForeground(new Color(221, 221, 187));
+				}
 			}
 
 			@Override
 			public void focusGained(FocusEvent e) {
 				if (tfEmail.getText().equals("Username")) {
 					JTextComponent component1 = (JTextComponent) e.getSource();
+					tfEmail.setForeground(Color.BLACK);
 					component1.setText("");
 				}
 
@@ -150,6 +147,7 @@ public class LogIn extends JFrame {
 				if (getPassword().equals("")) {
 					passwordField.setEchoChar((char) 0);
 					passwordField.setText("Password");
+					passwordField.setForeground(new Color(221, 221, 187));
 				}
 			}
 
@@ -157,6 +155,7 @@ public class LogIn extends JFrame {
 			public void focusGained(FocusEvent e) {
 				if (getPassword().equals("Password")) {
 					JTextComponent component = (JTextComponent) e.getSource();
+					passwordField.setForeground(Color.BLACK);
 					component.setText("");
 					passwordField.setEchoChar(defaultEchoChar);
 				}
@@ -231,8 +230,6 @@ public class LogIn extends JFrame {
 		
 		// add(background);
 		 //background = new JPanel();
-		 background.setBackground(new Color(176, 224, 230));
-		 background.setForeground(Color.WHITE);
 		//contentPane = new JPanel();
 		background.setBackground(new Color(176, 224, 230));
 		background.setForeground(Color.WHITE);
@@ -262,16 +259,20 @@ public class LogIn extends JFrame {
 		background.add(lbLogoVjopling);
 
 		tfEmail = new JTextField();
+		tfEmail.setForeground(new Color(221, 221, 187));
 		tfEmail.setText("Username");
 		sl_background.putConstraint(SpringLayout.NORTH, tfEmail, 87, SpringLayout.SOUTH, lbLogoVjopling);
 		sl_background.putConstraint(SpringLayout.WEST, tfEmail, 0, SpringLayout.WEST, lbLogoVjopling);
 		sl_background.putConstraint(SpringLayout.SOUTH, tfEmail, -430, SpringLayout.SOUTH, background);
 		sl_background.putConstraint(SpringLayout.EAST, tfEmail, -434, SpringLayout.EAST, background);
 		tfEmail.setFont(new Font("Century Gothic", Font.PLAIN, 26));
+		Font font = new Font("Century Gothic", Font.PLAIN, 26);
+		
 		background.add(tfEmail);
 		tfEmail.setColumns(10);
 
 		passwordField = new JPasswordField();
+		passwordField.setForeground(new Color(221, 221, 187));
 		defaultEchoChar = passwordField.getEchoChar();
 		passwordField.setText("Password");
 		passwordField.setEchoChar((char) 0);
@@ -332,12 +333,23 @@ public class LogIn extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (authenticate(getUsername(), getPassword())) {
 					MainWindow mainWindow = new MainWindow();
-					mainWindow.username = getUsername();
 					MainWindow.main(null);
 					frame.setVisible(false);
 				} else {
-					JOptionPane.showMessageDialog(lbLogoVjopling, "Your login or password is wong! Try again...",
-							"Wrong", JOptionPane.ERROR_MESSAGE);
+					 try {
+		                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+		                }
+					 UIManager UI=new UIManager();
+					 UI.put("OptionPane.background", Color.white);
+					 UI.put("Panel.background", Color.white);
+					ImageIcon icon = new ImageIcon(Toolkit.getDefaultToolkit().getImage("Image\\cross.gif"));
+					icon.setImage(icon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
+					JLabel label = new JLabel("Your login or password is wong! Try again...");
+					label.setFont(new Font("Century Gothic", Font.PLAIN, 24));
+					
+					JOptionPane.showMessageDialog(frame, label, "WRONG", JOptionPane.INFORMATION_MESSAGE, icon);
+					
 				}
 			}
 		});

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /saveImage.class
 /checkPassword.class
 /n.class
@@ -7,3 +8,7 @@
 /CreateStuffThread.class
 /Goods.class
 /Storage.class
+=======
+/LogIn$10.class
+/LogIn$9.class
+>>>>>>> Stashed changes
