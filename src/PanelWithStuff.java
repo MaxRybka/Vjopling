@@ -1,18 +1,22 @@
 import java.io.File;
 
 import javax.swing.JPanel;
+<<<<<<< HEAD
 import javax.swing.SpringLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
+=======
+>>>>>>> master
 
 public class PanelWithStuff extends JPanel {
 
 	/**
 	 * Create the panel.
 	 */
+<<<<<<< HEAD
 	public PanelWithStuff(String nameOfStuff,String wayImage,int price, int Quontiti) {
 		SpringLayout springLayout = new SpringLayout();
 		setLayout(springLayout);
@@ -52,4 +56,10 @@ public class PanelWithStuff extends JPanel {
 		add(Price);
 		
 	}
+=======
+	public PanelWithStuff(String nameOfStuff,File image) {
+		
+	}
+
+>>>>>>> master
 }
