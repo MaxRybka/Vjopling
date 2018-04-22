@@ -20,35 +20,44 @@ import javax.swing.ImageIcon;
 public class Client {
 	static int port = 8080;
 	static Socket socket;
+	static String ip = "192.168.43.62";
 	HashMap<String,Goods> goods;
-//	static boolean update = false;
+
 
 	public static void main(String args[]) throws Exception {
-//		createStuff("second", "Description", 1, "Category", new File("Image\\background.jpg"));
-		getGoodsMassive();
-
+		CheckUpdate();
+//		editStuff("third", "Description", 1, "Category", new File("Image\\background.jpg"));
+		
+//		getGoodsMassive();
+//		CheckUpdate();
 	}
 
-	public static void createStuff(String name, String description, int quantity, String category, File image) {
-		CreateStuffThread cs = new CreateStuffThread(name, description, quantity, category, image);
+	public static void editStuff(String name, String description, int quantity, String category, File image) {
+		Updating.updateWait();
+		EditStuffThread cs = new EditStuffThread(name, description, quantity, category, image);
 		Thread thread = new Thread(cs);
 		thread.start();
-		
 	}
 
 	public static HashMap<String,Goods> getGoodsMassive() {
+		
 		UpdateAll sa = new UpdateAll();
 		Thread thread = new Thread(sa);
 		thread.start();
 		return sa.getGoods();
 
 	}
+	
+	public static void CheckUpdate() {
+		Updating uw = new Updating();
+		Thread thread = new Thread(uw);
+		thread.start();
+	}
 
 }
 
 class UpdateAll implements Runnable {
 	HashMap<String, Goods> stuff = new HashMap<>();
-	String name,description,category;
 	Socket socket;
 	
 	public HashMap<String, Goods> getGoods() {
@@ -58,13 +67,14 @@ class UpdateAll implements Runnable {
 	@Override
 	public void run() {
 		try {
-			socket = new Socket("10.0.128.160", 8080);
+			socket = new Socket(Client.ip, Client.port);
 			PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			pw.println("All");	
 			readGoods();
 			pw.close();
 			br.close();
+			Updating.updateContinue();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -84,12 +94,12 @@ class UpdateAll implements Runnable {
 				System.out.println(len);
 				byte[] imageB = new byte[len];
 				if(len>0) {
-				    
 				    dis.readFully(imageB, 0, imageB.length); // read the message
 				}
 				ImageIcon image = new ImageIcon(imageB);
-				Goods good = new Goods(name,category,description,quantity,image);
-				stuff.put(name, good);
+				
+//				Goods good = new Goods(name,category,description,quantity,image);
+//				stuff.put(name, good);
 			}
 			
 			dis.close();
@@ -102,12 +112,14 @@ class UpdateAll implements Runnable {
 
 }
 
-class CreateStuffThread implements Runnable {
+
+
+class EditStuffThread implements Runnable {
 	String name, description, category;
 	int quantity;
 	File image;
 
-	CreateStuffThread(String name1, String description1, int quantity1, String category1, File image1) {
+	EditStuffThread(String name1, String description1, int quantity1, String category1, File image1) {
 		this.name = name1;
 		this.description = description1;
 		this.quantity = quantity1;
@@ -115,11 +127,10 @@ class CreateStuffThread implements Runnable {
 		this.image = image1;
 	}
 
-
 	@Override
 	public void run() {
 		try {
-			Socket socket = new Socket("10.0.128.160", 8080);
+			Socket socket = new Socket(Client.ip, Client.port);
 			PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
 			// BufferedReader br = new BufferedReader(new
 			// InputStreamReader(socket.getInputStream()));
@@ -159,40 +170,15 @@ class CreateStuffThread implements Runnable {
 				dos.close();
 			} catch (IOException e) {
 				e.printStackTrace();
-
-		int portNumber = 8080;
-		String str = DataInput.getString();
-		System.out.println("Client is started");
-		Socket socket = new Socket("192.168.137.66", portNumber);
-		BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
-		pw.println(str);
-
-		while ((str = br.readLine()) != null) {
-			if (str.equals("bye")) {
-				break;
 			}
 
 			socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		Updating.updateContinue();
 	}
 
 }
 
-//class UpdateWait extends Thread{
-//
-//	@Override
-//	public void run() {
-//		while(true) {
-//			
-//			while(!Client.update) {//while there is no signal for update
-//				Thread.yield();
-//			}
-//			Client.getGoodsMassive();
-//			
-//		}
-//	}
-//	
-//}
+
