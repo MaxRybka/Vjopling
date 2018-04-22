@@ -59,6 +59,14 @@
 >>>>>>> master
 /Adding$1.class
 /Adding.class
+<<<<<<< HEAD
 /EditStuffThread.class
 /CheckUpdate.class
 /Updating.class
+=======
+/Adding$2.class
+/Adding$3.class
+/MainWindow$3.class
+/PanelWithStuff$1.class
+/MainWindow$4.class
+>>>>>>> c997d2322e526dc898db1e8da50bbed8424e0b8e
