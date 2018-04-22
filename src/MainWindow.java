@@ -1,7 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
@@ -12,6 +11,7 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.JTextComponent;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Image;
@@ -26,6 +26,10 @@ import javax.swing.JComboBox;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JScrollBar;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ActionEvent;
 
 public class MainWindow extends JFrame {
 	
@@ -37,7 +41,7 @@ public class MainWindow extends JFrame {
 	static final int PRICE_MIN = 0;
 	static final int PRICE_MAX = 3000;
 	static final int FPS_INIT = 15;
-	private JTextField tfSerach;
+	private JTextField tfSearch;
 	private JLabel lblPrice;
 	
 	private JLabel ImStuff1;
@@ -54,6 +58,9 @@ public class MainWindow extends JFrame {
 	private static JComboBox cbMader;
 	private static JButton btnAddStuff;
 	private static JScrollBar scrollBar;
+	private JPanel mainPanel;
+	private JPanel panel_2;
+	private JPanel defaultPane;
 
 	/**
 	 * Launch the application.
@@ -64,6 +71,8 @@ public class MainWindow extends JFrame {
 				try {
 					
 					frame.setVisible(true);
+					frame.setResizable(false);
+					frame.requestFocus();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -93,6 +102,20 @@ public class MainWindow extends JFrame {
 		sl_contentPane.putConstraint(SpringLayout.EAST, scrollBar, 0, SpringLayout.EAST, contentPane);
 		contentPane.add(scrollBar);
 		
+		mainPanel = new JPanel();
+		mainPanel.setLayout(null);
+		mainPanel.setBackground(Color.WHITE);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, mainPanel, -5, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, mainPanel, 0, SpringLayout.EAST, panel);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, mainPanel, 5, SpringLayout.SOUTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, mainPanel, 0, SpringLayout.WEST, scrollBar);
+		contentPane.add(mainPanel);
+		
+		defaultPane = new JPanel();
+		defaultPane.setBounds(12, 13, 300, 300);
+		mainPanel.add(defaultPane);
+
+				
 	}
 
 	private void addFindPanel() {
@@ -135,21 +158,41 @@ public class MainWindow extends JFrame {
 				}
 			});
 
-			tfSerach = new JTextField();
-			sl_panel.putConstraint(SpringLayout.NORTH, tfSerach, 56, SpringLayout.SOUTH, lblFind);
-			sl_panel.putConstraint(SpringLayout.EAST, tfSerach, -46, SpringLayout.EAST, panel);
-			tfSerach.setText("Search...");
-			panel.add(tfSerach);
-			tfSerach.setColumns(10);
+			tfSearch = new JTextField();
+			tfSearch.setFont(new Font("Century Gothic", Font.PLAIN, 18));
+			sl_panel.putConstraint(SpringLayout.NORTH, tfSearch, 56, SpringLayout.SOUTH, lblFind);
+			sl_panel.putConstraint(SpringLayout.EAST, tfSearch, -46, SpringLayout.EAST, panel);
+			tfSearch.setText("Search...");
+			panel.add(tfSearch);
+			tfSearch.setColumns(10);
+			tfSearch.setForeground(new Color(221, 221, 187));
+			tfSearch.addFocusListener(new FocusListener() {
 
-			lblSerachIcon = new JLabel("-O");
-			sl_panel.putConstraint(SpringLayout.NORTH, lblSerachIcon, 0, SpringLayout.NORTH, tfSerach);
-			sl_panel.putConstraint(SpringLayout.WEST, lblSerachIcon, 6, SpringLayout.EAST, tfSerach);
-			sl_panel.putConstraint(SpringLayout.EAST, lblSerachIcon, -11, SpringLayout.EAST, panel);
+				@Override
+				public void focusLost(FocusEvent e) {
+					tfSearch.setText("Search...");
+				
+				}
+
+				@Override
+				public void focusGained(FocusEvent e) {
+					tfSearch.setText("");
+					tfSearch.setForeground(Color.BLACK);
+
+				}
+			});
+
+			lblSerachIcon = new JLabel("");
+			sl_panel.putConstraint(SpringLayout.NORTH, lblSerachIcon, 0, SpringLayout.NORTH, tfSearch);
+			sl_panel.putConstraint(SpringLayout.WEST, lblSerachIcon, 6, SpringLayout.EAST, tfSearch);
+			sl_panel.putConstraint(SpringLayout.SOUTH, lblSerachIcon, 0, SpringLayout.SOUTH, tfSearch);
+			ImageIcon icon = new ImageIcon(Toolkit.getDefaultToolkit().getImage("Image\\loop.png"));
+			icon.setImage(icon.getImage().getScaledInstance(25, 25, Image.SCALE_DEFAULT));
+			lblSerachIcon.setIcon(icon);
 			panel.add(lblSerachIcon);
 
 			cbCategory = new JComboBox();
-			sl_panel.putConstraint(SpringLayout.WEST, tfSerach, 0, SpringLayout.WEST, cbCategory);
+			sl_panel.putConstraint(SpringLayout.WEST, tfSearch, 0, SpringLayout.WEST, cbCategory);
 			sl_panel.putConstraint(SpringLayout.WEST, cbCategory, 57, SpringLayout.WEST, panel);
 			sl_panel.putConstraint(SpringLayout.EAST, cbCategory, -47, SpringLayout.EAST, panel);
 			cbCategory.setBackground(Color.WHITE);
@@ -167,6 +210,13 @@ public class MainWindow extends JFrame {
 
 			
 			btnAddStuff = new JButton("+ Stuff");
+			sl_panel.putConstraint(SpringLayout.EAST, lblSerachIcon, 0, SpringLayout.EAST, btnAddStuff);
+			btnAddStuff.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Adding adding = new Adding();
+					adding.main(null);
+				}
+			});
 			sl_panel.putConstraint(SpringLayout.SOUTH, cbMader, -109, SpringLayout.NORTH, btnAddStuff);
 			sl_panel.putConstraint(SpringLayout.WEST, btnAddStuff, -1, SpringLayout.WEST, panel);
 			sl_panel.putConstraint(SpringLayout.EAST, btnAddStuff, -1, SpringLayout.EAST, panel);
@@ -178,8 +228,7 @@ public class MainWindow extends JFrame {
 			panel.add(btnAddStuff);
 
 			lblPrice = new JLabel("Price(USD): 0");
-			sl_panel.putConstraint(SpringLayout.SOUTH, lblSerachIcon, -49, SpringLayout.NORTH, lblPrice);
-			sl_panel.putConstraint(SpringLayout.SOUTH, tfSerach, -48, SpringLayout.NORTH, lblPrice);
+			sl_panel.putConstraint(SpringLayout.SOUTH, tfSearch, -48, SpringLayout.NORTH, lblPrice);
 			sl_panel.putConstraint(SpringLayout.WEST, lblPrice, 66, SpringLayout.WEST, panel);
 			sl_panel.putConstraint(SpringLayout.EAST, lblPrice, -9, SpringLayout.EAST, panel);
 			sl_panel.putConstraint(SpringLayout.WEST, lblFind, 0, SpringLayout.WEST, lblPrice);
@@ -187,12 +236,14 @@ public class MainWindow extends JFrame {
 			lblPrice.setFont(new Font("Century Gothic", Font.PLAIN, 23));
 			panel.add(lblPrice);
 			
+			
+			
 		
 	}
 
 	private void setMainContantPain() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1280, 847);
+		setBounds(100, 100, 1280, 841);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(255, 255, 255));
 		contentPane.setForeground(Color.WHITE);
@@ -201,6 +252,9 @@ public class MainWindow extends JFrame {
 		sl_contentPane = new SpringLayout();
 		contentPane.setLayout(sl_contentPane);
 		
+//		PanelWithStuff pn1 = new PanelWithStuff("Kek", "stiff1", 100, 1000);
+//		panel.add(pn1,contentPane.getX()+310,contentPane.getY());
+//		
 	}
 
 	private void setUI() {
@@ -245,24 +299,24 @@ public class MainWindow extends JFrame {
 		
 // PANELS
 		
-//		JPanel panel_1 = new JPanel();
-//		sl_contentPane.putConstraint(SpringLayout.NORTH, panel_1, 10, SpringLayout.NORTH, contentPane);
-//		sl_contentPane.putConstraint(SpringLayout.WEST, panel_1, 18, SpringLayout.EAST, panel);
-//		sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_1, 310, SpringLayout.NORTH, contentPane);
-//		sl_contentPane.putConstraint(SpringLayout.EAST, panel_1, 318, SpringLayout.EAST, panel);
-//		contentPane.add(panel_1);
+//		JPanel mainPanel = new JPanel();
+//		sl_contentPane.putConstraint(SpringLayout.NORTH, mainPanel, 10, SpringLayout.NORTH, contentPane);
+//		sl_contentPane.putConstraint(SpringLayout.WEST, mainPanel, 18, SpringLayout.EAST, panel);
+//		sl_contentPane.putConstraint(SpringLayout.SOUTH, mainPanel, 310, SpringLayout.NORTH, contentPane);
+//		sl_contentPane.putConstraint(SpringLayout.EAST, mainPanel, 318, SpringLayout.EAST, panel);
+//		contentPane.add(mainPanel);
 //		
 //		JPanel panel_2 = new JPanel();
-//		sl_contentPane.putConstraint(SpringLayout.NORTH, panel_2, 0, SpringLayout.NORTH, panel_1);
-//		sl_contentPane.putConstraint(SpringLayout.WEST, panel_2, 6, SpringLayout.EAST, panel_1);
+//		sl_contentPane.putConstraint(SpringLayout.NORTH, panel_2, 0, SpringLayout.NORTH, mainPanel);
+//		sl_contentPane.putConstraint(SpringLayout.WEST, panel_2, 6, SpringLayout.EAST, mainPanel);
 //		sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_2, 310, SpringLayout.NORTH, contentPane);
-//		sl_contentPane.putConstraint(SpringLayout.EAST, panel_2, 306, SpringLayout.EAST, panel_1);
+//		sl_contentPane.putConstraint(SpringLayout.EAST, panel_2, 306, SpringLayout.EAST, mainPanel);
 //		contentPane.add(panel_2);
 //		
 //		JPanel panel_3 = new JPanel();
-//		sl_contentPane.putConstraint(SpringLayout.NORTH, panel_3, 0, SpringLayout.NORTH, panel_1);
+//		sl_contentPane.putConstraint(SpringLayout.NORTH, panel_3, 0, SpringLayout.NORTH, mainPanel);
 //		sl_contentPane.putConstraint(SpringLayout.WEST, panel_3, 6, SpringLayout.EAST, panel_2);
-//		sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_3, 300, SpringLayout.NORTH, panel_1);
+//		sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_3, 300, SpringLayout.NORTH, mainPanel);
 //		sl_contentPane.putConstraint(SpringLayout.EAST, panel_3, -6, SpringLayout.WEST, scrollBar);
 //		contentPane.add(panel_3);
 //		SpringLayout sl_panel_3 = new SpringLayout();
@@ -284,28 +338,28 @@ public class MainWindow extends JFrame {
 //		panel_3.add(lblNameOfStuff_3);
 //		
 //		JPanel panel_4 = new JPanel();
-//		sl_contentPane.putConstraint(SpringLayout.NORTH, panel_4, 6, SpringLayout.SOUTH, panel_1);
+//		sl_contentPane.putConstraint(SpringLayout.NORTH, panel_4, 6, SpringLayout.SOUTH, mainPanel);
 //		sl_contentPane.putConstraint(SpringLayout.WEST, panel_4, 18, SpringLayout.EAST, panel);
-//		sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_4, 306, SpringLayout.SOUTH, panel_1);
-//		sl_contentPane.putConstraint(SpringLayout.EAST, panel_4, 0, SpringLayout.EAST, panel_1);
-//		SpringLayout sl_panel_1 = new SpringLayout();
-//		panel_1.setLayout(sl_panel_1);
+//		sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_4, 306, SpringLayout.SOUTH, mainPanel);
+//		sl_contentPane.putConstraint(SpringLayout.EAST, panel_4, 0, SpringLayout.EAST, mainPanel);
+//		SpringLayout sl_mainPanel = new SpringLayout();
+//		mainPanel.setLayout(sl_mainPanel);
 //		
 //		ImStuff1 = new JLabel();
-//		sl_panel_1.putConstraint(SpringLayout.NORTH, ImStuff1, 10, SpringLayout.NORTH, panel_1);
-//		sl_panel_1.putConstraint(SpringLayout.WEST, ImStuff1, 10, SpringLayout.WEST, panel_1);
-//		panel_1.add(ImStuff1);
+//		sl_mainPanel.putConstraint(SpringLayout.NORTH, ImStuff1, 10, SpringLayout.NORTH, mainPanel);
+//		sl_mainPanel.putConstraint(SpringLayout.WEST, ImStuff1, 10, SpringLayout.WEST, mainPanel);
+//		mainPanel.add(ImStuff1);
 //	
 //		
 //		JLabel lblNameOfStuff_1 = new JLabel("Fashionable shoes Nike SB 2018");
 //		lblNameOfStuff_1.setFont(new Font("Century Gothic", Font.PLAIN, 18));
-//		sl_panel_1.putConstraint(SpringLayout.WEST, lblNameOfStuff_1, 10, SpringLayout.WEST, panel_1);
-//		sl_panel_1.putConstraint(SpringLayout.EAST, lblNameOfStuff_1, -10, SpringLayout.EAST, panel_1);
-//		sl_panel_1.putConstraint(SpringLayout.SOUTH, ImStuff1, -18, SpringLayout.NORTH, lblNameOfStuff_1);
-//		sl_panel_1.putConstraint(SpringLayout.EAST, ImStuff1, 0, SpringLayout.EAST, lblNameOfStuff_1);
-//		sl_panel_1.putConstraint(SpringLayout.NORTH, lblNameOfStuff_1, 258, SpringLayout.NORTH, panel_1);
-//		sl_panel_1.putConstraint(SpringLayout.SOUTH, lblNameOfStuff_1, -10, SpringLayout.SOUTH, panel_1);
-//		panel_1.add(lblNameOfStuff_1);
+//		sl_mainPanel.putConstraint(SpringLayout.WEST, lblNameOfStuff_1, 10, SpringLayout.WEST, mainPanel);
+//		sl_mainPanel.putConstraint(SpringLayout.EAST, lblNameOfStuff_1, -10, SpringLayout.EAST, mainPanel);
+//		sl_mainPanel.putConstraint(SpringLayout.SOUTH, ImStuff1, -18, SpringLayout.NORTH, lblNameOfStuff_1);
+//		sl_mainPanel.putConstraint(SpringLayout.EAST, ImStuff1, 0, SpringLayout.EAST, lblNameOfStuff_1);
+//		sl_mainPanel.putConstraint(SpringLayout.NORTH, lblNameOfStuff_1, 258, SpringLayout.NORTH, mainPanel);
+//		sl_mainPanel.putConstraint(SpringLayout.SOUTH, lblNameOfStuff_1, -10, SpringLayout.SOUTH, mainPanel);
+//		mainPanel.add(lblNameOfStuff_1);
 //		contentPane.add(panel_4);
 //		
 //		JPanel panel_5 = new JPanel();
