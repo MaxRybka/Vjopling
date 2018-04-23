@@ -33,53 +33,74 @@ public class Server {
 	public static void main(String args[]) {
 
 		Connection();
-		try {
-			ServerSocket servSocket = new ServerSocket(port);
+		try (ServerSocket servSocket = new ServerSocket(port);){
 			System.out.println("Waiting for a connection on " + port);
 
-			PrintWriter pw = null;
-			BufferedReader br = null;
+//			PrintWriter pw = null;
+//			BufferedReader br = null;
+			
 			while (true) {
 				try {
 					localSocket = servSocket.accept();
-					System.out.println("Accepted");
-					pw = new PrintWriter(localSocket.getOutputStream(), true);
-					br = new BufferedReader(new InputStreamReader(localSocket.getInputStream()));
-					String str = br.readLine();
-					switch (str) {
-					case "Create":
-					{
-						Create create = new Create();
-						Thread thread = new Thread(create);
-						thread.setPriority(Thread.MAX_PRIORITY);
-						thread.start();
-						
-						break;
-					}
-					case "All":
-					{
-						Update update = new Update();
-						Thread thread = new Thread(update);
-						thread.setPriority(Thread.MAX_PRIORITY);
-						thread.start();
-						break;
-					}
-					case "Check":
-					{
-						CheckUpdate cu = new CheckUpdate();
-						Thread thread = new Thread(cu);
-						thread.setPriority(Thread.NORM_PRIORITY);
-						thread.start();
-						break;
-					}
+					//System.out.println("Accepted "+localSocket.isClosed());
+//					try{
+						PrintWriter pw = new PrintWriter(localSocket.getOutputStream(), true);
+						BufferedReader br = new BufferedReader(new InputStreamReader(localSocket.getInputStream()));
+							String str = br.readLine();
+							switch (str) {
+								case "Create":
+								{
+									Create create = new Create();
+									Thread thread = new Thread(create);
+									thread.start();
+									synchronized(thread) {
+										try {
+											thread.wait();
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
+									}
+									
+									break;
+								}
+								case "All":
+								{
+									Update update = new Update();
+									Thread thread = new Thread(update);
+									thread.start();
+									synchronized(thread) {
+										try {
+											thread.wait();
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
+									}
+									break;
+								}
+								case "Check":
+								{
+									CheckUpdate cu = new CheckUpdate();
+									Thread thread = new Thread(cu);
+									thread.start();
+									synchronized(thread) {
+										try {
+											thread.wait();
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
+									}
+									break;
+								}
+//							}	
 					}
 				} catch (IOException ex) {
-					// ex.printStackTrace(System.out);
+					 System.out.println("Not accepted");
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 
 	}
 
@@ -301,10 +322,10 @@ class Update implements Runnable{
 
 	@Override
 	public void run() {
+		synchronized(this) {
 		try (
 				DataInputStream dis = new DataInputStream(new BufferedInputStream(Server.localSocket.getInputStream()));
 				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(Server.localSocket.getOutputStream()));){
-				
 				String query = "SELECT * FROM stuff;";
 				Statement stmnt;
 				try {
@@ -341,9 +362,11 @@ class Update implements Runnable{
 			} catch (IOException e) {
 				e.printStackTrace();
 
-			}finally{
-				
 			}
+		System.out.println("Update Continue");
+		notify();
+	}
+		
 	}
 	
 }
@@ -352,14 +375,12 @@ class Create implements Runnable{
 
 	@Override
 	public void run() {
+		synchronized(this) {
 		System.out.println(Server.localSocket.toString());
-		try (PrintWriter pw = new PrintWriter(Server.localSocket.getOutputStream(), true);
-				BufferedReader br = new BufferedReader(new InputStreamReader(Server.localSocket.getInputStream()))) {
+		try (PrintWriter pw = new PrintWriter(Server.localSocket.getOutputStream(), true);) {
 
-			try {
-				DataInputStream dis = new DataInputStream(new BufferedInputStream(Server.localSocket.getInputStream()));
-				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(Server.localSocket.getOutputStream()));
-				;
+			try(DataInputStream dis = new DataInputStream(new BufferedInputStream(Server.localSocket.getInputStream()));
+					DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(Server.localSocket.getOutputStream()));) {
 
 				String name = dis.readUTF();
 				System.out.println(name);
@@ -384,8 +405,6 @@ class Create implements Runnable{
 					fos.flush();
 				}
 				fos.close();
-				dis.close();
-				dos.close();
 
 				boolean isUserExists = false;
 				try (PreparedStatement ps = Server.conn.prepareStatement("select 1 from stuff where Name = ?")) {
@@ -410,6 +429,7 @@ class Create implements Runnable{
 					ps.setBlob(5, is);
 					ps.executeUpdate();
 					//Changing the Data Base need for Update
+					System.out.println("Changing the Data Base need for Update");
 					PreparedStatement update = Server.conn.prepareStatement("update updatecheck set needForUpdate=1 where ID=1;");
 					update.executeUpdate();
 				}
@@ -420,12 +440,13 @@ class Create implements Runnable{
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			pw.close();
-			br.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		notify();
+	}
+		
 	}
 	
 }
@@ -434,6 +455,7 @@ class CheckUpdate implements Runnable{
 
 	@Override
 	public void run() {
+		synchronized(this) {
 				try(DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(Server.localSocket.getOutputStream()));
 						DataInputStream dis = new DataInputStream(new BufferedInputStream(Server.localSocket.getInputStream()));
 						PreparedStatement ps = Server.conn.prepareStatement("select * from updatecheck;"))
@@ -443,12 +465,13 @@ class CheckUpdate implements Runnable{
 								int needForUpdate = rs.getInt("needForUpdate");
 								dos.writeInt(needForUpdate);
 								dos.flush();
-//								if(needForUpdate!=0){
-//									PreparedStatement update = Server.conn.prepareStatement("update updatecheck set needForUpdate=0 where ID=1;");
-//									update.executeUpdate();
-//								}
+								if(needForUpdate!=0){
+									PreparedStatement update = Server.conn.prepareStatement("update updatecheck set needForUpdate=0 where ID=1;");
+									update.executeUpdate();
+								}
 							}
 						}
+						
 				} catch (IOException | SQLException e) {
 					e.printStackTrace();
 				}
@@ -462,6 +485,8 @@ class CheckUpdate implements Runnable{
 //		} catch (SQLException e) {
 //			e.printStackTrace();
 //		}
+				notify();
+	}
 	}
 	
 }

@@ -20,38 +20,55 @@ import javax.swing.ImageIcon;
 public class Client {
 	static int port = 8080;
 	static Socket socket;
-	static String ip = "192.168.43.62";
+	static String ip = "10.0.128.194";
 	HashMap<String,Goods> goods;
-
+	static Object lock = new Object();
+	static Thread updateThread;
 
 	public static void main(String args[]) throws Exception {
+		synchronized(lock) {
 		CheckUpdate();
-//		editStuff("third", "Description", 1, "Category", new File("Image\\background.jpg"));
 		
+		editStuff("third", "Description", 1, "Category", new File("Image\\background.jpg"));
+		
+		
+		}
 //		getGoodsMassive();
 //		CheckUpdate();
 	}
 
-	public static void editStuff(String name, String description, int quantity, String category, File image) {
-		Updating.updateWait();
+	public static synchronized void editStuff(String name, String description, int quantity, String category, File image) throws InterruptedException {
+		updateThread.interrupt();
+		
 		EditStuffThread cs = new EditStuffThread(name, description, quantity, category, image);
 		Thread thread = new Thread(cs);
 		thread.start();
+		synchronized(thread) {
+			thread.wait();
+		}
+		
+		CheckUpdate();
 	}
 
-	public static HashMap<String,Goods> getGoodsMassive() {
+	public static synchronized HashMap<String,Goods> getGoodsMassive() throws InterruptedException {
+		updateThread.interrupt();
 		
 		UpdateAll sa = new UpdateAll();
 		Thread thread = new Thread(sa);
 		thread.start();
+		synchronized(thread) {
+			thread.wait();
+		}
+		
+		CheckUpdate();
 		return sa.getGoods();
 
 	}
 	
-	public static void CheckUpdate() {
+	public static synchronized void CheckUpdate() {
 		Updating uw = new Updating();
-		Thread thread = new Thread(uw);
-		thread.start();
+		updateThread = new Thread(uw);
+		updateThread.start();
 	}
 
 }
@@ -66,24 +83,29 @@ class UpdateAll implements Runnable {
 
 	@Override
 	public void run() {
-		try {
-			socket = new Socket(Client.ip, Client.port);
-			PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
-			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			pw.println("All");	
-			readGoods();
-			pw.close();
-			br.close();
-			Updating.updateContinue();
-		} catch (IOException e) {
-			e.printStackTrace();
+		synchronized(this) {
+			try {
+				System.out.println("!!!");
+				socket = new Socket(Client.ip, Client.port);
+				try (PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
+						){
+					
+					pw.println("All");	
+					readGoods();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}catch(IOException ioe) {
+				ioe.printStackTrace();
+			}
+			notify();
 		}
 	}
 	
 	private void readGoods() {
-		try {
-			DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-			DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+		try(DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));) {
+			
 			while(dis.readBoolean()) {
 				String name = dis.readUTF();
 				String description = dis.readUTF();
@@ -101,10 +123,7 @@ class UpdateAll implements Runnable {
 //				Goods good = new Goods(name,category,description,quantity,image);
 //				stuff.put(name, good);
 			}
-			
-			dis.close();
-			dos.close();
-			socket.close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -129,54 +148,47 @@ class EditStuffThread implements Runnable {
 
 	@Override
 	public void run() {
-		try {
-			Socket socket = new Socket(Client.ip, Client.port);
-			PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
-			// BufferedReader br = new BufferedReader(new
-			// InputStreamReader(socket.getInputStream()));
-			pw.println("Create");
-
-			try {
-				DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-
-				dos.writeUTF(name);
-				dos.flush();
-				dos.writeUTF(description);
-				dos.flush();
-				//dos.writeInt(price);
-				dos.write(quantity);
-				dos.flush();
-				dos.writeUTF(category);
-				dos.flush();
-
-				dos.writeUTF(image.getName());
-				dos.flush();
-
-				int n = 0;
-				dos.writeInt((int) image.length());
-				System.out.println("" + image.length());
-				byte[] buf = new byte[(int) image.length()];
-
-				System.out.println(image.getName());
-
-				FileInputStream fis = new FileInputStream(image);
-
-				while ((n = fis.read(buf)) != -1) {
-					dos.write(buf, 0, n);
+		synchronized(this) {
+			try (Socket socket = new Socket(Client.ip, Client.port);
+					PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);){
+				pw.println("Create");
+	
+				try(DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+						DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));) {
+					dos.writeUTF(name);
 					dos.flush();
+					dos.writeUTF(description);
+					dos.flush();
+					//dos.writeInt(price);
+					dos.write(quantity);
+					dos.flush();
+					dos.writeUTF(category);
+					dos.flush();
+	
+					dos.writeUTF(image.getName());
+					dos.flush();
+	
+					int n = 0;
+					dos.writeInt((int) image.length());
+					System.out.println("" + image.length());
+					byte[] buf = new byte[(int) image.length()];
+	
+					System.out.println(image.getName());
+	
+					FileInputStream fis = new FileInputStream(image);
+	
+					while ((n = fis.read(buf)) != -1) {
+						dos.write(buf, 0, n);
+						dos.flush();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				dis.close();
-				dos.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-			socket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			notify();
 		}
-		Updating.updateContinue();
 	}
 
 }
