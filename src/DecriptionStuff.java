@@ -29,12 +29,13 @@ public class DecriptionStuff extends JFrame {
 	private JLabel lblKolichestvo;
 	private JButton btnEditDescrition;
 	private SpinnerNumberModel modelForSpinner;
+	private SpinnerNumberModel modelForSpinner2;
 	private JSpinner spinner;
 	private JLabel Category;
 	private JButton btnNewButton;
 	private JTextArea Description;
 	
-	static DecriptionStuff frame = new DecriptionStuff("name", "description", "some shit", 14, "stuff1.png");
+	static DecriptionStuff frame = new DecriptionStuff("name", "description", "some shit", 14, "stuff1.png",999999);
 	private JLabel Price;
 	/**
 	 * Launch the application.
@@ -55,7 +56,7 @@ public class DecriptionStuff extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public DecriptionStuff(String name, String description,String category,int quantiti,String nameOfImage) {
+	public DecriptionStuff(String name, String description,String category,int quantiti,String nameOfImage,double price) {
 		//JLabel contentPane = new JLabel(new ImageIcon("Image\\wallper.jpg"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 816, 537);
@@ -100,7 +101,7 @@ public class DecriptionStuff extends JFrame {
 		btnEditDescrition.setFont(new Font("Century Gothic", Font.PLAIN, 13));
 		contentPane.add(btnEditDescrition);
 		
-		modelForSpinner = new SpinnerNumberModel(quantiti, 0, 10000, 50);
+		modelForSpinner = new SpinnerNumberModel(quantiti, 0, 99999, 50);
 		spinner = new JSpinner(modelForSpinner);
 		sl_contentPane.putConstraint(SpringLayout.WEST, spinner, 169, SpringLayout.WEST, contentPane);
 		sl_contentPane.putConstraint(SpringLayout.EAST, lblKolichestvo, -6, SpringLayout.WEST, spinner);
@@ -205,13 +206,14 @@ public class DecriptionStuff extends JFrame {
 		sl_contentPane.putConstraint(SpringLayout.EAST, Price, 150, SpringLayout.WEST, Image);
 		contentPane.add(Price);
 		
-		JSpinner spinner_1 = new JSpinner();
-		sl_contentPane.putConstraint(SpringLayout.NORTH, spinner, 32, SpringLayout.SOUTH, spinner_1);
+		modelForSpinner2 = new SpinnerNumberModel(price, 0, 99999999, 50);
+		JSpinner spinner_1 = new JSpinner(modelForSpinner2);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, spinner, 17, SpringLayout.SOUTH, spinner_1);
+		sl_contentPane.putConstraint(SpringLayout.EAST, spinner_1, -106, SpringLayout.EAST, Image);
 		spinner_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		sl_contentPane.putConstraint(SpringLayout.NORTH, spinner_1, 8, SpringLayout.NORTH, Price);
 		sl_contentPane.putConstraint(SpringLayout.WEST, spinner_1, 0, SpringLayout.WEST, spinner);
 		sl_contentPane.putConstraint(SpringLayout.SOUTH, spinner_1, -9, SpringLayout.SOUTH, Price);
-		sl_contentPane.putConstraint(SpringLayout.EAST, spinner_1, 0, SpringLayout.EAST, spinner);
 		contentPane.add(spinner_1);
 		
 	}

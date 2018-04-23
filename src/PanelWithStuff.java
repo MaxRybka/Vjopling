@@ -32,7 +32,7 @@ public class PanelWithStuff extends JPanel {
 		icon.setImage(icon.getImage().getScaledInstance(280, 224, Image.SCALE_DEFAULT));
 		img.setIcon(icon);
 		add(img);		
-		JLabel quontiti = new JLabel("Quontity: "+current.getAmmount());
+		JLabel quontiti = new JLabel("Quontity: 10000");
 		springLayout.putConstraint(SpringLayout.EAST, quontiti, -140, SpringLayout.EAST, img);
 		quontiti.setFont(new Font("Century Gothic", Font.PLAIN, 18));
 		springLayout.putConstraint(SpringLayout.NORTH, quontiti, 6, SpringLayout.SOUTH, img);
@@ -48,7 +48,7 @@ public class PanelWithStuff extends JPanel {
 		springLayout.putConstraint(SpringLayout.EAST, name, 0, SpringLayout.EAST, img);
 		add(name);
 		
-		JLabel Price = new JLabel("Price: "+current.getPrice());
+		JLabel Price = new JLabel("Price: 10000000");
 		springLayout.putConstraint(SpringLayout.WEST, Price, 0, SpringLayout.EAST, quontiti);
 		Price.setFont(new Font("Century Gothic", Font.PLAIN, 18));
 		springLayout.putConstraint(SpringLayout.NORTH, Price, 6, SpringLayout.SOUTH, img);
@@ -59,7 +59,7 @@ public class PanelWithStuff extends JPanel {
 		addMouseListener(new MouseAdapter() {
 			  @Override
               public void mousePressed(MouseEvent e) {
-                  DecriptionStuff ds1 = new  DecriptionStuff(nameOfStuff, current.getDescription(), current.getCategory(), current.getAmmount(), wayImage);
+                  DecriptionStuff ds1 = new  DecriptionStuff(nameOfStuff, current.getDescription(), current.getCategory(), current.getAmmount(), wayImage,current.getPrice());
                   ds1.main(null);
               }
 		});

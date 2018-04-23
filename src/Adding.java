@@ -63,7 +63,7 @@ public class Adding extends JFrame {
 	 */
 	public Adding() {
 		setUI();
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 775, 685);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
