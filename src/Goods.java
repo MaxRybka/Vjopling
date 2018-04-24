@@ -4,21 +4,24 @@ import javax.swing.ImageIcon;
 public class Goods {
   
   final static public String all = "All";
-  
+  final static public String defaultMaker = "Unknown";
+  private ImageIcon defaultImage = new ImageIcon("Image\\meme.png");
   private String name;
   private String description;
-  private double price;
+  private String maker;
+  private int price;
   private int ammount;
   private ImageIcon image;
-  private ImageIcon defaultImage;
   private String category;
   
   
-  public Goods(String name, String category, String description, double price, int ammount, ImageIcon image) {
+  public Goods(String name, String category, String maker, String description, int price, int ammount, ImageIcon image) {
     this.name = name;
     this.setCategory((category == null ? all : category));
+    this.maker = (maker == null ? defaultMaker : maker);
     this.description = description;
-    this.ammount = (ammount == 0 ? 0 : ammount);
+    this.price = price;
+    this.ammount = ammount;
     this.image = (image == null ? defaultImage : image);
   }
 
@@ -52,7 +55,15 @@ public class Goods {
   */
 
 
-  public String getName() {
+  public String getMaker() {
+	return maker;
+}
+
+public void setMaker(String maker) {
+	this.maker = maker;
+}
+
+public String getName() {
     return name;
   }
 
@@ -71,11 +82,11 @@ public class Goods {
     this.description = description;
   }
   
-  public double getPrice() {
+  public int getPrice() {
     return this.price;
   }
   
-  public void detPrice(double price) {
+  public void setPrice(int price) {
     this.price = price;
   }
 

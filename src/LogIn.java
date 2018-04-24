@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -243,7 +244,7 @@ public class LogIn extends JFrame {
 		// try {
 		// frame.getbackground().add(new JPanelWithbackground("Image\\background.jpg"));
 		// } catch (IOException e1) {
-		// // TODO Auto-generated catch block
+		//
 		// e1.printStackTrace();
 		// }
 
@@ -332,7 +333,7 @@ public class LogIn extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (authenticate(getUsername(), getPassword())) {
-					MainWindow mainWindow = new MainWindow();
+				//	MainWindow mainWindow = new MainWindow();
 					MainWindow.main(null);
 					frame.setVisible(false);
 				} else {
@@ -377,7 +378,10 @@ public class LogIn extends JFrame {
 		}
 		if (username.equals("login") && password.equals("letmein")) {
 			return true;
+		}if (username.equals("andrey") && password.equals("jopa")) {
+			return true;
 		}
+		
 		return false;
 	}
 

@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
@@ -8,9 +7,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -19,6 +21,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -32,35 +35,43 @@ import javax.swing.event.ChangeListener;
 
 public class MainWindow extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	static MainWindow frame = new MainWindow();
 	private SpringLayout sl_contentPane;
 	private JPanel contentPane;
 	String username;
-	private JLabel lblHello;
+	// private JLabel lblHello;
 	static final int PRICE_MIN = 0;
 	static final int PRICE_MAX = 3000;
+	static final int QUATNITY_MIN = 0;
+	static final int QUANTITY_MAX = 3000;
 	static final int FPS_INIT = 15;
 	private JTextField tfSearch;
 	private JLabel lblPrice;
-
-	private JLabel ImStuff1;
-	private JLabel ImStuff2;
-	private JLabel ImStuff3;
-	private int widthOfImages = 280;
-	private int heightOfImages = 230;
 
 	private static JPanel panel;
 	private static JLabel lblFind;
 	private static JSlider slider;
 	private static JLabel lblSerachIcon;
-	private static JComboBox cbCategory;
-	private static JComboBox cbMader;
+	private static JComboBox<String> cbCategory;
+	private static JComboBox<String> cbMaker;
 	private static JButton btnAddStuff;
-	private static JScrollPane scrollBar;
-	private JPanel mainPanel;
-	private JPanel panel_2;
-	private JPanel defaultPane;
+	private static JScrollBar scrollBar;
+	private static JPanel mainPanel;
+	JLabel lbQuantity ;
+	// private JPanel panel_2;
+	// private JPanel defaultPane;
 
+	Storage storage = new Storage();
+	  private String currentCategory = Goods.all;
+	  private int currentPrice = 999999;
+	  private String currentName = null;
+	  private String currentMaker = Goods.defaultMaker;
+	  private int currentQuantity = 999999;
 	/**
 	 * Launch the application.
 	 */
@@ -70,7 +81,7 @@ public class MainWindow extends JFrame {
 				try {
 
 					frame.setVisible(true);
-					frame.setResizable(false);
+				//	frame.setResizable(false);
 					frame.requestFocus();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -83,11 +94,10 @@ public class MainWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public MainWindow() {
-		setUI();
+		// setUI();
 		setMainContantPain();
 		addFindPanel();
 		addScrollBar();
-		addComponents();
 
 	}
 
@@ -95,10 +105,10 @@ public class MainWindow extends JFrame {
 
 		mainPanel = new JPanel();
 
-		//mainPanel.setLayout(null);
-		
-		mainPanel.setLayout(new BoxLayout(mainPanel, 1));
-	
+		 mainPanel.setLayout(null);
+
+	//	mainPanel.setLayout(new BoxLayout(mainPanel, 1));
+
 		mainPanel.setBackground(Color.WHITE);
 		sl_contentPane.putConstraint(SpringLayout.NORTH, mainPanel, -5, SpringLayout.NORTH, contentPane);
 		sl_contentPane.putConstraint(SpringLayout.WEST, mainPanel, 0, SpringLayout.EAST, panel);
@@ -110,9 +120,9 @@ public class MainWindow extends JFrame {
 
 		scrollBar.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollBar.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		//scrollBar.setPreferredSize(new Dimension(500, 500));
+		// scrollBar.setPreferredSize(new Dimension(500, 500));
 		// scrollPane.setBounds(100, 130, 400, 250);
-		sl_contentPane.putConstraint(SpringLayout.WEST, scrollBar, 0, SpringLayout.EAST, panel);
+		sl_contentPane.putConstraint(SpringLayout.WEST, scrollBar, 278, SpringLayout.EAST, panel);
 		sl_contentPane.putConstraint(SpringLayout.EAST, scrollBar, 5, SpringLayout.EAST, contentPane);
 		// scrollBar.setForeground(Color.WHITE);
 		// scrollBar.setBackground(Color.WHITE);
@@ -120,26 +130,25 @@ public class MainWindow extends JFrame {
 		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollBar, -5, SpringLayout.NORTH, contentPane);
 		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollBar, 5, SpringLayout.SOUTH, contentPane);
 		contentPane.add(scrollBar);
-		lblFind.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				repaint();
-				defaultPane = new JPanel();
-			//	defaultPane.setBounds(10, 10, 300, 300);
-//				for(int i=0;i<10;i++) {
-//				mainPanel.add(defaultPane);
-//				}
-				  
-			}
-		});
-		
-		// defaultPane.setVisible(false);
+		 lblFind.addMouseListener(new MouseAdapter() {
+		 public void mousePressed(MouseEvent e) {
+		 repaint();
+		// mainPanel.setLayout(new BoxLayout(mainPanel, 1));
+		 JPanel defaultPane = new JPanel();
+		 defaultPane.setBounds(10, 10, 300, 300);
+		 for (int i = 0; i < 100; i++) {
+			 System.out.println("lrl");
+			 	
+	           mainPanel.add(new JButton("kjdh"));
+	        }
 
+		 }
+		});
 	}
 
 	private void addFindPanel() {
 		panel = new JPanel();
-		// JLabel panel = new JLabel(new ImageIcon("Image\\background2.jpg")); THIS IS
-		// BACKGROUND
+		JLabel panel = new JLabel(new ImageIcon("Image\\nice2.jpg")); // THIS IS BACKGROUND
 		panel.setBackground(Color.WHITE);
 		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		sl_contentPane.putConstraint(SpringLayout.NORTH, panel, -10, SpringLayout.NORTH, contentPane);
@@ -151,28 +160,32 @@ public class MainWindow extends JFrame {
 		panel.setLayout(sl_panel);
 
 		lblFind = new JLabel("Finder");
+		lblFind.setForeground(Color.WHITE);
 		sl_panel.putConstraint(SpringLayout.NORTH, lblFind, 52, SpringLayout.NORTH, panel);
 		lblFind.setFont(new Font("Century Gothic", Font.PLAIN, 56));
 		panel.add(lblFind);
+		
 
 		slider = new JSlider();
 		sl_panel.putConstraint(SpringLayout.WEST, slider, 27, SpringLayout.WEST, panel);
+		sl_panel.putConstraint(SpringLayout.SOUTH, slider, -457, SpringLayout.SOUTH, panel);
 		sl_panel.putConstraint(SpringLayout.EAST, slider, 260, SpringLayout.WEST, panel);
-		slider.setForeground(Color.BLACK);
-		slider.setBackground(Color.WHITE);
+		slider.setForeground(new Color(255, 255, 255));
+		slider.setBackground(new Color(77, 191, 199));
 		slider.setMaximum(PRICE_MAX);
 		slider.setMinimum(PRICE_MIN);
 		// slider.setMinorTickSpacing(2);
 		slider.setMajorTickSpacing(PRICE_MAX / 3);
 		slider.setPaintTicks(true);
 		slider.setPaintLabels(true);
-		panel.add(slider);
+
 		slider.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				int value = slider.getValue();
 				lblPrice.setText("Price(USD): " + value);
+				currentPrice = value;
 
 			}
 		});
@@ -189,20 +202,28 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				if(tfSearch.getText().equals("")) {
 				tfSearch.setText("Search...");
-				tfSearch.setForeground(new Color(221, 221, 187));
-				}
+
 			}
 
 			@Override
 			public void focusGained(FocusEvent e) {
-				
-				if(tfSearch.getText().equals("Search...")) {
 				tfSearch.setText("");
 				tfSearch.setForeground(Color.BLACK);
-				}
 
+			}
+		});
+		tfSearch.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					currentName = tfSearch.getText();
+					if (!Storage.stuff.isEmpty())
+						paintGoodsPane(
+								storage.searchByQuantity(storage.searchByPrice(
+										storage.searchByMaker(storage.searchByCategory(
+												storage.searchByName(currentName), currentCategory), currentMaker),
+										currentPrice), currentQuantity));
+				}
 			}
 		});
 
@@ -215,42 +236,101 @@ public class MainWindow extends JFrame {
 		lblSerachIcon.setIcon(icon);
 		panel.add(lblSerachIcon);
 
-		cbCategory = new JComboBox();
+		cbCategory = new JComboBox<String>();
+		sl_panel.putConstraint(SpringLayout.NORTH, cbCategory, 66, SpringLayout.SOUTH, slider);
+		sl_panel.putConstraint(SpringLayout.SOUTH, cbCategory, -355, SpringLayout.SOUTH, panel);
+		cbCategory.setForeground(Color.WHITE);
+		cbCategory.setFont(new Font("Century Gothic", Font.PLAIN, 20));
 		sl_panel.putConstraint(SpringLayout.WEST, tfSearch, 0, SpringLayout.WEST, cbCategory);
 		sl_panel.putConstraint(SpringLayout.WEST, cbCategory, 57, SpringLayout.WEST, panel);
 		sl_panel.putConstraint(SpringLayout.EAST, cbCategory, -47, SpringLayout.EAST, panel);
-		cbCategory.setBackground(Color.WHITE);
-		sl_panel.putConstraint(SpringLayout.NORTH, cbCategory, 417, SpringLayout.NORTH, panel);
-		sl_panel.putConstraint(SpringLayout.SOUTH, slider, -66, SpringLayout.NORTH, cbCategory);
+		cbCategory.setBackground(new Color(81, 194, 200));
+		for (int i = 0; i < Storage.categories.size(); i++) {
+			if (Storage.categories.get(i) != null) {
+				// System.out.println("cg++");
+				cbCategory.addItem(Storage.categories.get(i));
+			}
+		}
+		cbCategory.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					currentCategory = (String) cbCategory.getSelectedItem();
+				} catch (NullPointerException e) {
+					currentCategory = null;
+				}
+
+			}
+		});
 		panel.add(cbCategory);
 
-		cbMader = new JComboBox();
-		sl_panel.putConstraint(SpringLayout.NORTH, cbMader, 565, SpringLayout.NORTH, panel);
-		sl_panel.putConstraint(SpringLayout.WEST, cbMader, 57, SpringLayout.WEST, panel);
-		sl_panel.putConstraint(SpringLayout.EAST, cbMader, -47, SpringLayout.EAST, panel);
-		cbMader.setBackground(Color.WHITE);
-		sl_panel.putConstraint(SpringLayout.SOUTH, cbCategory, -111, SpringLayout.NORTH, cbMader);
-		panel.add(cbMader);
+		cbMaker = new JComboBox<String>();
+		sl_panel.putConstraint(SpringLayout.NORTH, cbMaker, 52, SpringLayout.SOUTH, cbCategory);
+		sl_panel.putConstraint(SpringLayout.WEST, cbMaker, 58, SpringLayout.WEST, panel);
+		sl_panel.putConstraint(SpringLayout.EAST, cbMaker, 0, SpringLayout.EAST, tfSearch);
+		cbMaker.setForeground(Color.WHITE);
+		cbMaker.setFont(new Font("Century Gothic", Font.PLAIN, 20));
+		cbMaker.setBackground(new Color(166, 232, 228));
+		for (int i = 0; i < Storage.makers.size(); i++) {
+			if (Storage.makers.get(i) != null) {
+				// System.out.println("mk++");
+				if (Storage.makers.get(i).equals(Goods.defaultMaker)) {
+					cbMaker.addItem("All");
+				} else {
+					cbMaker.addItem(Storage.makers.get(i));
+				}
+			}
+		}
+		cbCategory.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					currentCategory = (String) cbCategory.getSelectedItem();
+				} catch (NullPointerException e) {
+					currentCategory = null;
+				}
+
+			}
+		});
+		cbMaker.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					currentMaker = (String) cbMaker.getSelectedItem();
+				} catch (NullPointerException n) {
+					currentMaker = null;
+				}
+			};
+		});
+		panel.add(cbMaker);
 
 		btnAddStuff = new JButton("+ Stuff");
+		sl_panel.putConstraint(SpringLayout.SOUTH, cbMaker, -163, SpringLayout.NORTH, btnAddStuff);
+		btnAddStuff.setForeground(new Color(0, 0, 0));
 		sl_panel.putConstraint(SpringLayout.EAST, lblSerachIcon, 0, SpringLayout.EAST, btnAddStuff);
 		btnAddStuff.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Adding adding = new Adding();
-				adding.main(null);
+				// Adding adding = new Adding();
+				Adding.main(null);
 			}
 		});
-		sl_panel.putConstraint(SpringLayout.SOUTH, cbMader, -109, SpringLayout.NORTH, btnAddStuff);
 		sl_panel.putConstraint(SpringLayout.WEST, btnAddStuff, -1, SpringLayout.WEST, panel);
 		sl_panel.putConstraint(SpringLayout.EAST, btnAddStuff, -1, SpringLayout.EAST, panel);
 		btnAddStuff.setFont(new Font("Century Gothic", Font.PLAIN, 33));
 		sl_panel.putConstraint(SpringLayout.SOUTH, btnAddStuff, -1, SpringLayout.SOUTH, panel);
-		btnAddStuff.setBackground(Color.WHITE);
+		btnAddStuff.setBackground(new Color(206, 245, 242));
 
 		sl_panel.putConstraint(SpringLayout.NORTH, btnAddStuff, -103, SpringLayout.SOUTH, panel);
 		panel.add(btnAddStuff);
 
 		lblPrice = new JLabel("Price(USD): 0");
+		lblPrice.setForeground(Color.WHITE);
 		sl_panel.putConstraint(SpringLayout.SOUTH, tfSearch, -48, SpringLayout.NORTH, lblPrice);
 		sl_panel.putConstraint(SpringLayout.WEST, lblPrice, 66, SpringLayout.WEST, panel);
 		sl_panel.putConstraint(SpringLayout.EAST, lblPrice, -9, SpringLayout.EAST, panel);
@@ -259,7 +339,61 @@ public class MainWindow extends JFrame {
 		lblPrice.setFont(new Font("Century Gothic", Font.PLAIN, 23));
 		panel.add(lblPrice);
 
+		setUI();
+
+		panel.add(slider);
+		
+		JSlider slider_1 = new JSlider();
+		
+		slider_1.setForeground(Color.DARK_GRAY);
+		sl_panel.putConstraint(SpringLayout.NORTH, slider_1, -76, SpringLayout.NORTH, btnAddStuff);
+		sl_panel.putConstraint(SpringLayout.WEST, slider_1, 28, SpringLayout.WEST, panel);
+		sl_panel.putConstraint(SpringLayout.SOUTH, slider_1, -24, SpringLayout.NORTH, btnAddStuff);
+		sl_panel.putConstraint(SpringLayout.EAST, slider_1, 1, SpringLayout.EAST, slider);
+		panel.add(slider_1);
+		slider_1.setMaximum(QUANTITY_MAX);
+		slider_1.setMinimum(QUATNITY_MIN);
+		// slider.setMinorTickSpacing(2);
+		slider_1.setMajorTickSpacing(QUANTITY_MAX / 3);
+		slider_1.setBackground(new Color(198, 244, 241));
+		slider_1.setPaintTicks(true);
+		slider_1.setPaintLabels(true);
+		
+		lbQuantity = new JLabel("Quantity:");
+		lbQuantity.setForeground(new Color(0,0,0));
+		lbQuantity.setFont(new Font("Century Gothic", Font.PLAIN, 23));
+		sl_panel.putConstraint(SpringLayout.WEST, lbQuantity, 0, SpringLayout.WEST, lblFind);
+		sl_panel.putConstraint(SpringLayout.SOUTH, lbQuantity, -20, SpringLayout.NORTH, slider_1);
+		panel.add(lbQuantity);
+		slider_1.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				int value = slider_1.getValue();
+				lbQuantity.setText("Quantity: " + value);
+				currentQuantity = value;
+
+			}
+		});
+
 	}
+	public static void repaintAdd(String category, String maker) {
+	    if(category!=null) {
+	      cbCategory.addItem(category);
+	    }
+	    if(maker!=null)
+	      cbMaker.addItem(maker);  
+	  }
+	  
+	  public static void repaintDelCat(String category) {
+	    if(category!=null) 
+	      cbCategory.removeItem(category);
+	  }
+	  
+	  public static void repaintDelMaker(String maker) {
+	    if(maker!=null)
+	      cbMaker.removeItem(maker);
+	  }
 
 	private void setMainContantPain() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -295,168 +429,26 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	private void addComponents() {
-
-		// PICTURES FOR PANEL
-
-		// ImStuff1.setIcon(new ImageIcon(new
-		// ImageIcon("Image\\stuff1.png").getImage().getScaledInstance(widthOfImages,
-		// heightOfImages, Image.SCALE_DEFAULT)));
-		// ImStuff2.setIcon(new ImageIcon(new
-		// ImageIcon("Image\\stuff2.png").getImage().getScaledInstance(widthOfImages,
-		// heightOfImages, Image.SCALE_DEFAULT)));
-		// ImStuff3.setIcon(new ImageIcon(new
-		// ImageIcon("Image\\stuff3.png").getImage().getScaledInstance(widthOfImages,
-		// heightOfImages, Image.SCALE_DEFAULT)));
-
-		// lblHello = new JLabel("Hi,"+LogIn.username+" nice to see you.");
-		// sl_contentPane.putConstraint(SpringLayout.NORTH, lblHello, 345,
-		// SpringLayout.NORTH, contentPane);
-		// sl_contentPane.putConstraint(SpringLayout.WEST, lblHello, -1009,
-		// SpringLayout.EAST, contentPane);
-		// sl_contentPane.putConstraint(SpringLayout.SOUTH, lblHello, -358,
-		// SpringLayout.SOUTH, contentPane);
-		// sl_contentPane.putConstraint(SpringLayout.EAST, lblHello, -251,
-		// SpringLayout.EAST, contentPane);
-		// lblHello.setFont(new Font("Century Gothic", Font.PLAIN, 70));
-		// contentPane.add(lblHello);
-		// TODO animation for text
-
-		// PANELS
-
-		// JPanel mainPanel = new JPanel();
-		// sl_contentPane.putConstraint(SpringLayout.NORTH, mainPanel, 10,
-		// SpringLayout.NORTH, contentPane);
-		// sl_contentPane.putConstraint(SpringLayout.WEST, mainPanel, 18,
-		// SpringLayout.EAST, panel);
-		// sl_contentPane.putConstraint(SpringLayout.SOUTH, mainPanel, 310,
-		// SpringLayout.NORTH, contentPane);
-		// sl_contentPane.putConstraint(SpringLayout.EAST, mainPanel, 318,
-		// SpringLayout.EAST, panel);
-		// contentPane.add(mainPanel);
-		//
-		// JPanel panel_2 = new JPanel();
-		// sl_contentPane.putConstraint(SpringLayout.NORTH, panel_2, 0,
-		// SpringLayout.NORTH, mainPanel);
-		// sl_contentPane.putConstraint(SpringLayout.WEST, panel_2, 6,
-		// SpringLayout.EAST, mainPanel);
-		// sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_2, 310,
-		// SpringLayout.NORTH, contentPane);
-		// sl_contentPane.putConstraint(SpringLayout.EAST, panel_2, 306,
-		// SpringLayout.EAST, mainPanel);
-		// contentPane.add(panel_2);
-		//
-		// JPanel panel_3 = new JPanel();
-		// sl_contentPane.putConstraint(SpringLayout.NORTH, panel_3, 0,
-		// SpringLayout.NORTH, mainPanel);
-		// sl_contentPane.putConstraint(SpringLayout.WEST, panel_3, 6,
-		// SpringLayout.EAST, panel_2);
-		// sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_3, 300,
-		// SpringLayout.NORTH, mainPanel);
-		// sl_contentPane.putConstraint(SpringLayout.EAST, panel_3, -6,
-		// SpringLayout.WEST, scrollBar);
-		// contentPane.add(panel_3);
-		// SpringLayout sl_panel_3 = new SpringLayout();
-		// panel_3.setLayout(sl_panel_3);
-		//
-		// ImStuff3 = new JLabel("");
-		// sl_panel_3.putConstraint(SpringLayout.NORTH, ImStuff3, 10,
-		// SpringLayout.NORTH, panel_3);
-		// sl_panel_3.putConstraint(SpringLayout.WEST, ImStuff3, 10, SpringLayout.WEST,
-		// panel_3);
-		// sl_panel_3.putConstraint(SpringLayout.SOUTH, ImStuff3, 247,
-		// SpringLayout.NORTH, panel_3);
-		// sl_panel_3.putConstraint(SpringLayout.EAST, ImStuff3, 298, SpringLayout.WEST,
-		// panel_3);
-		// panel_3.add(ImStuff3);
-		//
-		// JLabel lblNameOfStuff_3 = new JLabel("Gaming Mouse");
-		// lblNameOfStuff_3.setFont(new Font("Century Gothic", Font.PLAIN, 18));
-		// sl_panel_3.putConstraint(SpringLayout.NORTH, lblNameOfStuff_3, 6,
-		// SpringLayout.SOUTH, ImStuff3);
-		// sl_panel_3.putConstraint(SpringLayout.WEST, lblNameOfStuff_3, 10,
-		// SpringLayout.WEST, panel_3);
-		// sl_panel_3.putConstraint(SpringLayout.SOUTH, lblNameOfStuff_3, -10,
-		// SpringLayout.SOUTH, panel_3);
-		// sl_panel_3.putConstraint(SpringLayout.EAST, lblNameOfStuff_3, 0,
-		// SpringLayout.EAST, ImStuff3);
-		// panel_3.add(lblNameOfStuff_3);
-		//
-		// JPanel panel_4 = new JPanel();
-		// sl_contentPane.putConstraint(SpringLayout.NORTH, panel_4, 6,
-		// SpringLayout.SOUTH, mainPanel);
-		// sl_contentPane.putConstraint(SpringLayout.WEST, panel_4, 18,
-		// SpringLayout.EAST, panel);
-		// sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_4, 306,
-		// SpringLayout.SOUTH, mainPanel);
-		// sl_contentPane.putConstraint(SpringLayout.EAST, panel_4, 0,
-		// SpringLayout.EAST, mainPanel);
-		// SpringLayout sl_mainPanel = new SpringLayout();
-		// mainPanel.setLayout(sl_mainPanel);
-		//
-		// ImStuff1 = new JLabel();
-		// sl_mainPanel.putConstraint(SpringLayout.NORTH, ImStuff1, 10,
-		// SpringLayout.NORTH, mainPanel);
-		// sl_mainPanel.putConstraint(SpringLayout.WEST, ImStuff1, 10,
-		// SpringLayout.WEST, mainPanel);
-		// mainPanel.add(ImStuff1);
-		//
-		//
-		// JLabel lblNameOfStuff_1 = new JLabel("Fashionable shoes Nike SB 2018");
-		// lblNameOfStuff_1.setFont(new Font("Century Gothic", Font.PLAIN, 18));
-		// sl_mainPanel.putConstraint(SpringLayout.WEST, lblNameOfStuff_1, 10,
-		// SpringLayout.WEST, mainPanel);
-		// sl_mainPanel.putConstraint(SpringLayout.EAST, lblNameOfStuff_1, -10,
-		// SpringLayout.EAST, mainPanel);
-		// sl_mainPanel.putConstraint(SpringLayout.SOUTH, ImStuff1, -18,
-		// SpringLayout.NORTH, lblNameOfStuff_1);
-		// sl_mainPanel.putConstraint(SpringLayout.EAST, ImStuff1, 0, SpringLayout.EAST,
-		// lblNameOfStuff_1);
-		// sl_mainPanel.putConstraint(SpringLayout.NORTH, lblNameOfStuff_1, 258,
-		// SpringLayout.NORTH, mainPanel);
-		// sl_mainPanel.putConstraint(SpringLayout.SOUTH, lblNameOfStuff_1, -10,
-		// SpringLayout.SOUTH, mainPanel);
-		// mainPanel.add(lblNameOfStuff_1);
-		// contentPane.add(panel_4);
-		//
-		// JPanel panel_5 = new JPanel();
-		// sl_contentPane.putConstraint(SpringLayout.NORTH, panel_5, 6,
-		// SpringLayout.SOUTH, panel_2);
-		// sl_contentPane.putConstraint(SpringLayout.WEST, panel_5, 0,
-		// SpringLayout.WEST, panel_2);
-		// sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_5, 306,
-		// SpringLayout.SOUTH, panel_2);
-		//
-		// sl_contentPane.putConstraint(SpringLayout.EAST, panel_5, 306,
-		// SpringLayout.EAST, panel_4);
-		// SpringLayout sl_panel_2 = new SpringLayout();
-		// panel_2.setLayout(sl_panel_2);
-		//
-		// ImStuff2 = new JLabel("");
-		// sl_panel_2.putConstraint(SpringLayout.NORTH, ImStuff2, 10,
-		// SpringLayout.NORTH, panel_2);
-		// sl_panel_2.putConstraint(SpringLayout.WEST, ImStuff2, 10, SpringLayout.WEST,
-		// panel_2);
-		// sl_panel_2.putConstraint(SpringLayout.SOUTH, ImStuff2, 244,
-		// SpringLayout.NORTH, panel_2);
-		// sl_panel_2.putConstraint(SpringLayout.EAST, ImStuff2, 290, SpringLayout.WEST,
-		// panel_2);
-		// panel_2.add(ImStuff2);
-		//
-		// JLabel lblNameOfStuff_2 = new JLabel("Java T-Shirt");
-		// lblNameOfStuff_2.setFont(new Font("Century Gothic", Font.PLAIN, 18));
-		// sl_panel_2.putConstraint(SpringLayout.NORTH, lblNameOfStuff_2, 10,
-		// SpringLayout.SOUTH, ImStuff2);
-		// sl_panel_2.putConstraint(SpringLayout.WEST, lblNameOfStuff_2, 10,
-		// SpringLayout.WEST, panel_2);
-		// sl_panel_2.putConstraint(SpringLayout.SOUTH, lblNameOfStuff_2, -10,
-		// SpringLayout.SOUTH, panel_2);
-		// sl_panel_2.putConstraint(SpringLayout.EAST, lblNameOfStuff_2, 0,
-		// SpringLayout.EAST, ImStuff2);
-		// panel_2.add(lblNameOfStuff_2);
-		// panel_4.setLayout(new SpringLayout());
-		// contentPane.add(panel_5);
-		// panel_5.setLayout(new SpringLayout());
-
+	public static void paintGoodsPane(HashMap<String, Goods> stuff) {
+//		mainPanel.revalidate();
+//		mainPanel.validate();
+		mainPanel.repaint();
+		//frame.remove(mainPanel);
+		
+		int x = 0;
+		int y = 0;
+		for (Map.Entry<String, Goods> entry : stuff.entrySet()) {
+			
+			PanelWithStuff pf = new PanelWithStuff(entry.getValue().getName(), entry.getValue().getImage());
+			
+			pf.setBounds(10 + (310) * x, 10 + (310) * y, 300, 300);
+			mainPanel.add(pf);
+			
+			x++;
+			if (x == 3) {
+				x = 0;
+				y++;
+			}
+		}
 	}
 }
