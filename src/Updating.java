@@ -8,27 +8,16 @@ import java.net.Socket;
 
 public class Updating extends Thread{
 	public static boolean update = false;
-	public boolean getUpdate() {
-		return update;
-	}
-	Object obj = new Object();
 	@Override
 	public void run() {
+		System.out.println("Update wait");
 		while(true) {
-			try {
-				//Thread.sleep(1000);
-				checkUpdate();
-//				synchronized(obj) {
-//					wait();
-//				}
-				System.out.println(update);
-				if(update) {
-					Client.getGoodsMassive();// return Goods Massive from DataBase
-					//Changing the update in the DB;
-					//break;
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			
+			checkUpdate();
+			if(update) {
+				Client.getGoodsMassive();// return Goods Massive from DataBase
+				//Changing the update in the DB;
+				//break;
 			}
 			
 		}
@@ -49,6 +38,8 @@ public class Updating extends Thread{
 				}else update= true;
 			} catch (IOException e) {
 				e.printStackTrace();
+				socket.close();
+				System.out.println("Socket closed");
 			}
 			
 		} catch (IOException e) {
